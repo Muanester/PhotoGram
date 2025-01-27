@@ -11,7 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { UserSignIn } from "@/types";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Icons } from "@/components/ui/icons";
+import { useUserAuth } from "@/context/UserAuthContext";
+// import { signUp, googleSignIn } from "@/context/userAuthContext";
+// import { useUserAuth } from "@/context/userUserAuth";
 
 const initialValue: UserSignIn = {
   email: "",
@@ -22,21 +26,27 @@ const initialValue: UserSignIn = {
 interface ISignupProps {}
 
 const Signup: React.FunctionComponent<ISignupProps> = () => {
+  const { googleSignIn, signUp } = useUserAuth();
+  const navigate = useNavigate();
   const [userInfo, setUserInfo] = React.useState<UserSignIn>(initialValue);
+
   const handleGoogleSignIn = async (e: React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      console.log("The user info: ", userInfo);
+      await googleSignIn();
+      navigate("/");
     } catch (error) {
-      console.log("Error: ", error);
+      console.log("Signin Error: ", error);
     }
   };
   const handleSubmit = async (e: React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       console.log("The user info: ", userInfo);
+      signUp(userInfo.email, userInfo.password);
+      navigate("/");
     } catch (error) {
-      console.log("Error: ", error);
+      console.log("Submit Error: ", error);
     }
   };
 
@@ -54,11 +64,7 @@ const Signup: React.FunctionComponent<ISignupProps> = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="grid grid-cols-2 gap-6">
-                <Button variant="outline">
-                  <Icons.gitHub className="mr-2 h-4 w-4" />
-                  Github
-                </Button>
+              <div className="grid grid-cols-1 gap-6">
                 <Button variant="outline" onClick={handleGoogleSignIn}>
                   <Icons.google className="mr-2 h-4 w-4" />
                   Google
