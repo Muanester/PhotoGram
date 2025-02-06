@@ -43,10 +43,22 @@ const FileUploader: React.FunctionComponent<IFileUploaderProps> = ({
   const [uploadedFiles, setUploadedFiles] = useState<OutputFileEntry[]>([]);
   const ctxProviderRef = useRef<InstanceType<LR.UploadCtxProvider>>(null);
 
+  // const handleRemoveClick = useCallback(
+  //   (uuid: OutputFileEntry["uuid"]) =>
+  //     onChange({ files: fileEntry.files.filter((f) => f.uuid !== uuid) }),
+  //   [fileEntry.files, onChange]
+  // );
+
+  // const [files, setFiles] = useState<OutputFileEntry[]>([]);
+
   const handleRemoveClick = useCallback(
-    (uuid: OutputFileEntry["uuid"]) =>
-      onChange({ files: fileEntry.files.filter((f) => f.uuid !== uuid) }),
-    [fileEntry.files, onChange]
+    (uuid: OutputFileEntry["uuid"]) => {
+      const updatedFiles = uploadedFiles.filter((f) => f.uuid !== uuid);
+      setUploadedFiles(updatedFiles);
+      onChange({ files: updatedFiles });
+      console.log("File removed:", uuid);
+    },
+    [uploadedFiles, onChange]
   );
 
   useEffect(() => {
@@ -87,6 +99,17 @@ const FileUploader: React.FunctionComponent<IFileUploaderProps> = ({
     ]);
   };
 
+  // const resetUploaderState = () =>
+  //   ctxProviderRef.current?.uploadCollection.clearAll();
+
+  const handleModalCloseEvent = () => {
+    // resetUploaderState();
+
+    onChange({ files: [...uploadedFiles] });
+
+    // setUploadedFiles([]);
+  };
+
   return (
     <div>
       <FileUploaderRegular
@@ -96,6 +119,7 @@ const FileUploader: React.FunctionComponent<IFileUploaderProps> = ({
         confirmUpload={false}
         localeDefinitionOverride={localeDefinitionOverride}
         apiRef={ctxProviderRef}
+        onModalClose={handleModalCloseEvent}
         onChange={handleChangeEvent}
         pubkey="d36606b1fe6a334b4ab4"
         sourceList="local, url, camera, dropbox"
