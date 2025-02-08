@@ -7,6 +7,7 @@ import Profile from "./pages/profile";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
 import ProtectedRoutes from "./components/ProtectedRoutes";
+import EditProfile from "./pages/profile/editProfile";
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +31,11 @@ export const router = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile />,
+        errorElement: <Error />,
+      },
+      {
+        path: "/edit-profile",
+        element: <EditProfile />,
         errorElement: <Error />,
       },
     ],
