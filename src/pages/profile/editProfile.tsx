@@ -8,10 +8,16 @@ import * as React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Avatar from "@/assets/images/avatar.png";
 import { Input } from "@/components/ui/input";
+import {
+  createUserProfile,
+  updateUserProfile,
+} from "@/repository/user.service";
+import { useUserAuth } from "@/context/userAuthContext";
 
 interface IEditProfileProps {}
 
 const EditProfile: React.FunctionComponent<IEditProfileProps> = (props) => {
+  const { user, updateProfileInfo } = useUserAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const { id, userId, userBio, displayName, photoURL } = location.state;
@@ -26,7 +32,35 @@ const EditProfile: React.FunctionComponent<IEditProfileProps> = (props) => {
     files: [],
   });
 
-  const updateProfile = () => {};
+  const updateProfile = async (e: React.MouseEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      if (id) {
+        const response = await updateUserProfile(id, data);
+      } else {
+        const response = await createUserProfile(data);
+      }
+
+      const profileInfo = {
+        user,
+        displayName: data.displayName,
+        photoURL: data.photoURL,
+      };
+
+      updateProfileInfo(profileInfo);
+
+      navigate("/profile");
+    } catch (error) {
+      console.log("Error updating profile : ", error);
+    }
+  };
+
+  React.useEffect(() => {
+    if (fileEntry.files.length > 0) {
+      setData({ ...data, photoURL: fileEntry.files[0].cdnUrl || "" });
+    }
+  }, [fileEntry]);
 
   return (
     <Layout>
@@ -42,13 +76,25 @@ const EditProfile: React.FunctionComponent<IEditProfileProps> = (props) => {
                   Profile Picture
                 </Label>
                 <div className="mb-4">
-                  <img
-                    src={data.photoURL ? data.photoURL : Avatar}
-                    alt=""
-                    className="w-28 h-28 rounded-full border-2 border-slate-800 object-cover"
-                  />
+                  {fileEntry.files.length > 0 ? (
+                    <img
+                      src={fileEntry.files[0].cdnUrl!}
+                      alt=""
+                      className="w-28 h-28 rounded-full border-2 border-slate-800 object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={data.photoURL ? data.photoURL : Avatar}
+                      alt=""
+                      className="w-28 h-28 rounded-full border-2 border-slate-800 object-cover"
+                    />
+                  )}
                 </div>
-                <FileUploader fileEntry={fileEntry} onChange={setFileEntry} />
+                <FileUploader
+                  fileEntry={fileEntry}
+                  onChange={setFileEntry}
+                  preview={false}
+                />
               </div>
               <div className="flex flex-col">
                 <Label className="mb-4" htmlFor="displayName">
@@ -80,7 +126,11 @@ const EditProfile: React.FunctionComponent<IEditProfileProps> = (props) => {
                 />
               </div>
 
-              <Button className="mt-4 w-32 mr-8" type="submit">
+              <Button
+                className="mt-4 w-32 mr-8"
+                type="submit"
+                onClick={() => updateProfile}
+              >
                 Update
               </Button>
               <Button

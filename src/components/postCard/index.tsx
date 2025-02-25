@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import Image2 from "@/assets/images/image2.jpg";
 import { HeartIcon, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { updateLikesOnPost } from "@/repository/post.service";
@@ -51,13 +50,13 @@ const PostCard: React.FunctionComponent<IPostCardProps> = ({ data }) => {
         <CardTitle className="text-sm text-center flex justify-start items-center">
           <span className="mr-2">
             <img
-              src={Image2}
+              src={data.photoUrl}
               className="w-10 h-10 rounded-full border-2 border-slate-800 object-cover"
               alt=""
             />
           </span>
 
-          <span className="">Guest_user</span>
+          <span className="">{data.username}</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
@@ -81,7 +80,7 @@ const PostCard: React.FunctionComponent<IPostCardProps> = ({ data }) => {
         </div>
         <div className="w-full text-sm">{likesInfo.likes} likes</div>
         <div className="w-full text-sm">
-          <span>Guest_user</span>: {data.caption}
+          <span>{data.username}</span>: {data.caption}
         </div>
       </CardFooter>
     </Card>
